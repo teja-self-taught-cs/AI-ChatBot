@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #chat {
+            height: 440px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f7f7f7;
+        }
+
+        #input {
+            width: 100%;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chat"></div>
+    <input id="input" placeholder="Ask me anything..." />
+    <script>
+        const input = document.getElementById("input");
+        const chat = document.getElementById("chat");
+
+        input.addEventListener("keypress", async (e) => {
+            if (e.key === "Enter" && input.value.trim()) {
+                const msg = input.value.trim();
+                chat.innerHTML += `<p><b>You:</b> ${msg}</p>`;
+                input.value = "";
+
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: msg })
+                });
+
+                const data = await res.json();
+                chat.innerHTML += `<p><b>Bot:</b> ${data.choices[0].message.content}</p>`;
+                chat.scrollTop = chat.scrollHeight;
+            }
+        });
+    </script>
+</body>
+
+</html>
